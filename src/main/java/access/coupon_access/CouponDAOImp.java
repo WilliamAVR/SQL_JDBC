@@ -6,6 +6,7 @@ import beans.Company;
 import beans.Coupon;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,21 +14,27 @@ import java.util.Map;
 
 public class CouponDAOImp implements CouponDAO {
     private static final String ADD_COUPON = "INSERT INTO `coupon_system_database`.`coupons` (`COMPANY_ID`, `CATEGORY_ID`, `title`, `description`, `start_date`, `end_date`, `amount`, `price`, `image`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-    private static final String UPDATE_COUPON = "UPDATE `coupon_system_database`.`coupons` SET (`COMPANY_ID` = ? , `CATEGORY_ID` = ?, `title` = ?, `description` = ?, `start_date` = ?, `end_date` = ?, `amount` = ?, `price` = ?, `image` = ?) WHERE (`id` = ?);";
+    private static final String UPDATE_COUPON = "UPDATE `coupon_system_database`.`coupons` SET `COMPANY_ID` = ?, `CATEGORY_ID` = ?, `title` = ?, `description` = ?, `start_date` = ?, `end_date` = ?, `amount` = ?, `price` = ?, `image` = ? WHERE (`id` = ?);";
     private static final String DELETE_COUPON = "DELETE FROM `coupon_system_database`.`coupons` WHERE (`id` = ?);";
     private static final String GET_ALL_COUPONS = "SELECT * FROM coupon_system_database.coupons;";
     private static final String GET_COUPON = "SELECT * FROM coupon_system_database.coupons WHERE (`id` = ?);";
     private static final String COUPON_EXISTS = "SELECT EXISTS ( SELECT * FROM coupon_system_database.coupons) AS `result`;";
     private static final String GET_ALL_COMPANY_COUPONS = "SELECT * FROM `coupon_system_database`.`coupons` where `COMPANY_ID` = ?;";
-    private static final String GET_ALL_COUPONS_BY_DATE = "SELECT * FROM `coupon_system_database`.`coupons` where `COMPANY_ID` = ?;";
+    private static final String GET_ALL_COUPONS_BY_DATE = "SELECT * FROM `coupon_system_database`.`coupons` where `end_date` = ?;";
+    private static final String COUPON_TITLE_EXISTS = "select exists( select * from `coupon_system_database`.`coupons` WHERE `company_id` = ? and `title` = ?) as `result`;";
+    private static final int MINIMUM_DURATION = 1;
 
     public CouponDAOImp() {
     }
 
     @Override
     public void add(Coupon coupon) {
-        Map<Integer, Object> map = setMapAdd(coupon);
-        DatabaseUtil.runStatement(ADD_COUPON, map);
+        if(!hasDuplicate(coupon) && coupon.getEndDate().after(Date.valueOf(LocalDate.now().plusDays(MINIMUM_DURATION)))) {
+            Map<Integer, Object> map = setMapAdd(coupon);
+            DatabaseUtil.runStatement(ADD_COUPON, map);
+            return;
+        }
+        System.out.println("cannot add coupon to system, coupon either exists or expires too early");
     }
 
     @Override
@@ -73,13 +80,22 @@ public class CouponDAOImp implements CouponDAO {
 
     @Override
     public List<Coupon> findCouponsByDate(Date date) {
-        return null;
+        Map<Integer,Object> map = setMapDate(date);
+        List<?> list = DatabaseUtil.runQuery(GET_ALL_COUPONS_BY_DATE,map);
+        List<Coupon> coupons = new ArrayList<>();
+        list.stream().map(obj -> couponFromMap((Map<String, Object>) obj)).forEach(coupons::add);
+        return coupons;
     }
 
 
     @Override
     public boolean exists(int id) {
         List<?> list = DatabaseUtil.runQuery(COUPON_EXISTS, setMap(id));
+        Map<String, Object> map = (Map<String, Object>) list.get(0);
+        return ((Long) (map.get("result")) == 1);
+    }
+    public boolean hasDuplicate(Coupon coupon){
+        List<?> list = DatabaseUtil.runQuery(COUPON_TITLE_EXISTS, setMapDuplicateCheck(coupon));
         Map<String, Object> map = (Map<String, Object>) list.get(0);
         return ((Long) (map.get("result")) == 1);
     }
@@ -112,6 +128,18 @@ public class CouponDAOImp implements CouponDAO {
         map.put(1, id);
         return map;
     }
+    public Map<Integer, Object> setMapDate(Date date) {
+        Map<Integer, Object> map = new HashMap<>();
+        map.put(1, date);
+        return map;
+    }
+    public Map<Integer,Object>setMapDuplicateCheck(Coupon coupon){
+        Map<Integer, Object> map = new HashMap<>();
+        map.put(1,coupon.getCompanyID());
+        map.put(2,coupon.getTitle());
+        return map;
+    }
+
 
     private Coupon couponFromMap(Map<String, Object> map) {
         return Coupon.builder()

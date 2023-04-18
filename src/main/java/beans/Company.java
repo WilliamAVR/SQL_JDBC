@@ -1,5 +1,7 @@
 package beans;
 
+import access.coupon_access.CouponDAO;
+import access.coupon_access.CouponDAOImp;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,5 +14,8 @@ public class Company {
     private String name;
     private String email;
     private String password;
-    private List<Coupon> couponList;
+    public List<Coupon> getCoupons(){
+        CouponDAO couponDAO = new CouponDAOImp();
+        return couponDAO.getCompanyCoupons(id);
+    }
 }

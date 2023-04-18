@@ -7,5 +7,5 @@ import java.util.List;
 public interface CvCDAO {
     List<Coupon> getCustomerCoupons(int customerID);
     void useCustomerCoupon(int customerID,int couponID);
-    void buyCoupon(int customerCoupon,Coupon coupon);
+    void buyCoupon(int customerID,Coupon coupon);
 }

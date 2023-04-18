@@ -15,6 +15,8 @@ public class CustomerDAOImp implements CustomerDAO {
     private static final String GET_CUSTOMER = "SELECT * FROM `coupon_system_database`.`customers` WHERE (`id` = ?);";
     private static final String GET_ALL_CUSTOMERS = "SELECT * FROM `coupon_system_database`.`customers`;";
     private static final String CUSTOMER_EXISTS = "SELECT EXISTS (SELECT * FROM `coupon_system_database`.`customers` WHERE (`id` = ?)) as `result`;";
+    private static final String CUSTOMER_VERIFY = "SELECT EXISTS (SElECT * FROM coupon_system_database.customers WHERE `email` = ? AND `password` = ?) as `result`;";
+    private static final String CUSTOMER_LOGIN = "SELECT * FROM coupon_system_database.customers WHERE `email` = ? AND `password` = ? LIMIT 1;";
 
     public CustomerDAOImp() {
     }
@@ -63,7 +65,17 @@ public class CustomerDAOImp implements CustomerDAO {
         Map<String, Object> map = (Map<String, Object>) list.get(0);
         return ((Long) (map.get("result")) == 1);
     }
-
+    public boolean loginCustomer(String email, String password){
+        List<?> list = DatabaseUtil.runQuery(CUSTOMER_LOGIN, setMapLogin(email,password));
+        Map<String, Object> map = (Map<String, Object>) list.get(0);
+        return ((Long) (map.get("result")) == 1);
+    }
+    public Map<Integer,Object> setMapLogin(String email,String password){
+        Map<Integer,Object> map = new HashMap<>();
+        map.put(1,email);
+        map.put(2,password);
+        return map;
+    }
     @Override
     public Map<Integer, Object> setMapAdd(Customer customer) {
         Map<Integer, Object> map = new HashMap<>();

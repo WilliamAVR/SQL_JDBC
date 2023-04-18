@@ -25,7 +25,7 @@ public class CvCDAOImp implements CvCDAO {
         list.stream().map(obj ->getCouponID((Map<String,Object>)obj)).forEach(couponIDs::add);
         CouponDAO couponDAO = new CouponDAOImp();
         List<Coupon> couponList = new ArrayList<>();
-        couponIDs.stream().map(id -> couponDAO.retrieve(id)).forEach(couponList::add);
+        couponIDs.stream().map(couponDAO::retrieve).forEach(couponList::add);
         return couponList;
     }
 

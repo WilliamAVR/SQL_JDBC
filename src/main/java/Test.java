@@ -1,5 +1,8 @@
 import Database.DatabaseManager;
 import Database.DatabaseUtil;
+import Factory.CompanyFactory;
+import Factory.CouponFactory;
+import Factory.CustomerFactory;
 import access.company_access.CompanyDAO;
 import access.company_access.CompanyDAOImp;
 import access.coupon_access.CouponDAO;
@@ -20,10 +23,19 @@ import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
+//        DatabaseManager.deleteSchema();
+//        DatabaseManager.createSchema();
+//        DatabaseManager.createTables();
+//        DatabaseManager.prepareCategories();
+        CompanyDAO companyDAO = new CompanyDAOImp();
+//        CompanyFactory.initCompanyList(5).forEach(companyDAO::add);
+        CustomerDAO customerDAO = new CustomerDAOImp();
+//        CustomerFactory.initCustomerList(20).forEach(customerDAO::add);
         CouponDAO couponDAO = new CouponDAOImp();
-        couponDAO.delete(2);
+//        companyDAO.retrieveAll().forEach(company -> CouponFactory.initCouponList(1,9,company.getId()).forEach(couponDAO::add));
         CvCDAO cvCDAO = new CvCDAOImp();
-        cvCDAO.getCustomerCoupons(1).forEach(System.out::println);
+        //cvCDAO.buyCoupon(customerDAO.retrieve(15).getId(),couponDAO.retrieve(20));
+        cvCDAO.buyCoupon(2,couponDAO.retrieve(20));
 
     }
 }
