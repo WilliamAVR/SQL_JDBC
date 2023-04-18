@@ -8,8 +8,8 @@ import java.util.Map;
 public class DatabaseManager {
     private static final String CREATE_SCHEMA = "CREATE SCHEMA `coupon_system_database` ;";
     private static final String DELETE_SCHEMA = "DROP SCHEMA `coupon_system_database` ;";
-    private static final String CREATE_TABLE_COMPANIES = "CREATE TABLE `coupon_system_database`.`companies` (`id` INT NOT NULL AUTO_INCREMENT,`name` VARCHAR(255) NOT NULL,`email` VARCHAR(255) NOT NULL,`password` VARCHAR(255) NOT NULL, PRIMARY KEY (`id`));";
-    private static final String CREATE_TABLE_CUSTOMERS = "CREATE TABLE `coupon_system_database`.`customers` (`id` INT NOT NULL AUTO_INCREMENT,`first_name` VARCHAR(255) NOT NULL,`last_name` VARCHAR(255) NOT NULL,`email` VARCHAR(255) NOT NULL,`password` VARCHAR(255) NOT NULL,PRIMARY KEY (`id`));";
+    private static final String CREATE_TABLE_COMPANIES = "CREATE TABLE `coupon_system_database`.`companies` (`id` INT NOT NULL AUTO_INCREMENT,`name` VARCHAR(255) NOT NULL,`email` VARCHAR(255) NOT NULL,`password` VARCHAR(255) NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE);";
+    private static final String CREATE_TABLE_CUSTOMERS = "CREATE TABLE `coupon_system_database`.`customers` (`id` INT NOT NULL AUTO_INCREMENT,`first_name` VARCHAR(255) NOT NULL,`last_name` VARCHAR(255) NOT NULL,`email` VARCHAR(255) NOT NULL,`password` VARCHAR(255) NOT NULL,PRIMARY KEY (`id`), UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE);";
     private static final String CREATE_TABLE_CATEGORIES = "CREATE TABLE `coupon_system_database`.`categories` (`id` INT NOT NULL AUTO_INCREMENT,`name` VARCHAR(255) NOT NULL,PRIMARY KEY (`id`));";
     private static final String INSERT_INTO_TABLE_CATEGORIES = "INSERT INTO  `coupon_system_database`.`categories` (`name`) VALUES(?)";
     private static final String CREATE_TABLE_COUPONS = "CREATE TABLE `coupon_system_database`.`coupons` (\n" +

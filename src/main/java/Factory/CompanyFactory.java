@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompanyFactory {
-    public static Company initCompany(){
+    public static Company initCompany(int n){
         return Company.builder()
                 .name("Company")
-                .email("company@sample.com")
+                .email(String.format("company%d@sample.com",n))
                 .password("password")
                 .build();
     }
-    public static List<Company> initCompanyList(int length){
+    public static List<Company> initCompanyList(int startingPoint,int length){
         List<Company> list = new ArrayList<>();
         for (int i = 0; i < length; i++) {
-            list.add(initCompany());
+            list.add(initCompany(startingPoint+i));
         }
         return list;
     }
